@@ -1,0 +1,29 @@
+.login-page-holder{
+	width: 100%;
+	height: 100vh;
+	padding-top: 130px;
+	background-image: url(../img/draw.jpg);
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+.login-holder{
+	max-width: 400px;
+	border-radius: 10px;
+	margin: 0 auto;
+	padding: 30px;
+	background: #fff;
+}
+.login-holder h3{
+	margin-top: 0;
+	margin-bottom: 40px;
+	text-align: center;
+}
+.login-holder form{
+	margin: 0 auto;
+}
+.login-holder form .input-field input{
+	padding-left: 10px;
+	font-size: 18px;
+	width: 95%;
+}
