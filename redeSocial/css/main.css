@@ -46,6 +46,8 @@
 
 .app-main{
 	padding-top: 25px;
+	background-color: #f9f9f9;
+	min-height: 100vh;
 }
 
 .card-info-holder{
@@ -56,11 +58,14 @@
 	vertical-align: sub;
 	padding-right: 5px;
 }
+.feed-text-holder{
+	margin-top: 10px;
+}
 .textarea-feed-holder{
 	height: 70px;
 	padding:14px;
-	margin-top:10px;
 	border-radius: 4px;
+	background-color: #fff;
 }
 .textarea-feed-holder textarea{
 	border:0;
@@ -69,4 +74,11 @@
 	font-size: 18px;
 	border-right: solid 2px #eee;
 	height: 100%;
+}
+.feed-content-holder article{
+	background-color: #fff;
+	padding:20px;
+	border-radius: 5px;
+	border:solid 1px #eee;
+	margin-bottom: 15px;
 }

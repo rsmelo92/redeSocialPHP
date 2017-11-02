@@ -29,9 +29,11 @@
 		$registro = $return -> fetch_array();
 
 		if ($registro) {
-			$_SESSION["logado"] 		= "ok";
-			$_SESSION["nome_usuario"] 	= $registro["nome"];
-			$_SESSION["id_usuario"] 	= $registro["id"];
+			$_SESSION["logado"] 			= "ok";
+			$_SESSION["nome_usuario"] 		= $registro["nome"];
+			$_SESSION["id_usuario"] 		= $registro["id"];
+			$_SESSION["curso_usuario"] 		= $registro["curso"];
+			$_SESSION["semestre_usuario"] 	= $registro["semestre"];
 
 			header("Location: dashboard.php");
 		}

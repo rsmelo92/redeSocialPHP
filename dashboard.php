@@ -5,6 +5,41 @@
 		header("Location: index.php");
 	}
 
+	$con = new mysqli("localhost", "root", "", "andrecos_unifacs");
+	
+	if ($con->connect_errno) {
+		echo "Erro ao conectar: " . $con->connect_error;
+	}
+
+	if ($_POST != NULL) {
+
+		$senderNome 	= $_SESSION["nome_usuario"];
+		$senderId 		= $_SESSION["id_usuario"];
+		$senderCurso 	= $_SESSION["curso_usuario"];
+		$senderSem 		= $_SESSION["semestre_usuario"];
+		$message 		= $_POST["message_feed"];
+		date_default_timezone_set('America/Araguaina');
+		$data 			= date('Y-m-d H:i:sa');
+
+		$sql = "INSERT INTO mensagens (texto, sender, idSender, cursoSender, semestreSender, data)
+				VALUES ('$message', '$senderNome', '$senderId', '$senderCurso', '$senderSem', CURRENT_TIMESTAMP())";
+
+		$retorno = $con -> query( $sql );
+
+		if ($retorno) {
+			echo "<script>";
+			echo "alert('Inserido com sucesso!');";
+			echo "location.href = 'dashboard.php'; ";
+			echo "</script>";
+		}
+		else{
+			echo "<script>";
+			echo "alert('Erro na inserção!');";
+			echo "</script>";
+		}
+
+	}
+
 ?>
 
 <!DOCTYPE html>
@@ -38,8 +73,8 @@
 					<div class="card-list-holder">
 						
 						<ul class="card-list">
-							<li class="chip"><i class="tiny material-icons">flag</i> Computação</li>
-							<li class="chip"><i class="tiny material-icons">description</i>2º Semestre</li>
+							<li class="chip"><i class="tiny material-icons">flag</i> <?php echo $_SESSION["curso_usuario"]; ?></li>
+							<li class="chip"><i class="tiny material-icons">description</i><?php echo $_SESSION["semestre_usuario"]; ?></li>
 						</ul>
 					</div>
 				</div>
@@ -54,14 +89,30 @@
 				<div class="row">
 					<form method="POST" class="col s12">
 						<div class="textarea-feed-holder z-depth-1 valign-wrapper">
-							<textarea class="col s11"></textarea>	
+							<textarea name="message_feed" class="col s11"></textarea>	
 							<span class="col s2">
-								<a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a>		
+								<button type="submit" class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></button>		
 							</span>		
 						</div>
 					</form>
 				</div>
 			</div>
+
+			<div class="feed-content-holder">
+			<?php 
+				$sql = "SELECT * FROM mensagens ORDER BY data DESC";
+				$retornoMsg = $con -> query($sql);
+				while ($registro = $retornoMsg -> fetch_array()) {
+					$texto = $registro['texto'];
+			?>
+				<article>
+					<p><?php echo $texto; ?></p>
+				</article>
+			<?php
+				}
+			?>
+			</div>
+
 		</section>
 
 		<section class="other-section col s12 m3">
