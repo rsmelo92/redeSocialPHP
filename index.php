@@ -44,9 +44,11 @@
 
 <!DOCTYPE html>
 <html>
+<head>
 <?php 
 	include('head.html');
-?>
+?>	
+</head>
 <body>
 	<main class="login-page-holder">
 			

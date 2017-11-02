@@ -27,3 +27,23 @@
 	font-size: 18px;
 	width: 95%;
 }
+
+.dashboard-nav{
+	padding: 0 20px;
+}
+.profile-figure canvas,
+.profile-figure-second canvas{
+	border-radius: 50%;
+	margin-right: 10px;
+	min-width: 40px;
+	min-height: 40px;
+}
+
+.app-main{
+	padding-top: 25px;
+}
+
+.card-info-holder{
+	font-size: 16px;
+	min-height: 45px;
+}
