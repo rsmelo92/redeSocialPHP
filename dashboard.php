@@ -27,16 +27,19 @@
 	</nav>
 
 	<main class="app-main row">
-		<section class="profile-card-section col s12 m3">
+		<div class="grid-helper col m1 show-on-large"></div>
+		<section class="profile-card-section col s12 m2">
 
-			<div class="card profile-card">
+			<div class="card profile-card z-depth-1">
 				<div class="card-content">
 					<div class="card-info-holder">
 						<span class="profile-figure-second valign-wrapper"><?php echo $_SESSION['nome_usuario'] ?></span>
 					</div>
 					<div class="card-list-holder">
-						<ul>
-							
+						
+						<ul class="card-list">
+							<li class="chip"><i class="tiny material-icons">flag</i> Computação</li>
+							<li class="chip"><i class="tiny material-icons">description</i>2º Semestre</li>
 						</ul>
 					</div>
 				</div>
@@ -46,11 +49,22 @@
 			</div>
 		</section>
 
-		<section class="feed-section container col 6">
-			
+		<section class="feed-section container col s12 m6">
+			<div class="feed-text-holder">
+				<div class="row">
+					<form method="POST" class="col s12">
+						<div class="textarea-feed-holder z-depth-1 valign-wrapper">
+							<textarea class="col s11"></textarea>	
+							<span class="col s2">
+								<a class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></a>		
+							</span>		
+						</div>
+					</form>
+				</div>
+			</div>
 		</section>
 
-		<section class="other-section col 3">
+		<section class="other-section col s12 m3">
 			
 		</section>
 	</main>
