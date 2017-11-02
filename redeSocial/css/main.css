@@ -1,6 +1,12 @@
 .chip{
 	background-color: #f1f8e9;
 }
+.article-header .badge{
+	font-weight: 300;
+	font-size: 0.8rem;
+	color: #fff;
+	border-radius: 2px;
+}
 
 .login-page-holder{
 	width: 100%;
@@ -77,8 +83,34 @@
 }
 .feed-content-holder article{
 	background-color: #fff;
-	padding:20px;
 	border-radius: 5px;
 	border:solid 1px #eee;
 	margin-bottom: 15px;
+}
+.article-header,
+.article-body,
+.article-footer{
+	padding: 20px;
+}
+.article-header{
+	padding-bottom: 0;
+}
+.article-footer{
+	border-top: solid 1px #eee;
+	height: 65px;
+}
+.article-do-stuff{
+	display: inline-block;
+	float: left;
+	width: 80%;
+}
+.article-date{
+	display: inline-block;
+	float: left;
+	width: 20%;
+}
+.edit-mobile-profile{
+	position: absolute;
+	right: 5px;
+	top: 8px;
 }

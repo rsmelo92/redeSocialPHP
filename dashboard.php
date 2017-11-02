@@ -62,10 +62,13 @@
 	</nav>
 
 	<main class="app-main row">
-		<div class="grid-helper col m1 show-on-large"></div>
-		<section class="profile-card-section col s12 m2">
+		<div class="grid-helper col xl1 show-on-large"></div>
+		<section class="profile-card-section col s12 l2">
 
 			<div class="card profile-card z-depth-1">
+				<a class="edit-mobile-profile hide-on-large-only btn-floating btn-small waves-effect">
+					<i class="small material-icons">mode_edit</i>
+				</a>
 				<div class="card-content">
 					<div class="card-info-holder">
 						<span class="profile-figure-second valign-wrapper"><?php echo $_SESSION['nome_usuario'] ?></span>
@@ -78,13 +81,13 @@
 						</ul>
 					</div>
 				</div>
-				<div class="card-action">
+				<div class="card-action hide-on-med-and-down">
 					<a href="#">Editar Perfil</a>
 				</div>
 			</div>
 		</section>
 
-		<section class="feed-section container col s12 m6">
+		<section class="feed-section container col s12 l6">
 			<div class="feed-text-holder">
 				<div class="row">
 					<form method="POST" class="col s12">
@@ -103,10 +106,29 @@
 				$sql = "SELECT * FROM mensagens ORDER BY data DESC";
 				$retornoMsg = $con -> query($sql);
 				while ($registro = $retornoMsg -> fetch_array()) {
+					$nome = $registro['sender'];
+					$curso = $registro['cursoSender'];
+					$semestre = $registro['semestreSender'];
 					$texto = $registro['texto'];
+					$data = $registro['data'];
 			?>
 				<article>
-					<p><?php echo $texto; ?></p>
+					<div class="article-header">
+						<span><?php echo $nome; ?></span>
+						<span class="badge red"><?php echo $curso; ?></span>
+  						<span class="badge blue"><?php echo $semestre; ?></span>
+					</div>
+					<div class="article-body">
+						<p><em><?php echo $texto; ?></em></p>
+					</div>
+					<div class="article-footer">
+						<div class="article-do-stuff">
+							<a href="">Curtir</a>
+						</div>
+						<div class="article-date">
+							<small><?php echo $data; ?></small>
+						</div>
+					</div>
 				</article>
 			<?php
 				}
@@ -126,10 +148,9 @@
 				<i class="material-icons">menu</i>
 			</a>
 			<ul>
-				<li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
-				<li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>
-				<li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
-				<li><a class="btn-floating blue" href="logoff.php"><i class="material-icons">exit_to_app</i></a></li>
+				<li>
+					<a class="btn-floating blue" href="logoff.php"><i class="material-icons">exit_to_app</i></a>
+				</li>
 			</ul>
 		</div>
 	</footer>
