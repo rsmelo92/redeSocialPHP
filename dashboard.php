@@ -1,5 +1,7 @@
 <?php 
 
+	error_reporting(1);
+
 	session_start("rede_social");
 	if ($_SESSION["logado"] != 'ok') {
 		header("Location: index.php");
@@ -9,6 +11,36 @@
 	
 	if ($con->connect_errno) {
 		echo "Erro ao conectar: " . $con->connect_error;
+	}
+
+	$seguir 	= $_GET["seguir"];
+	$seguirNome = $_GET["seguirNome"];
+
+	if ($seguir) {
+		$idUser = $_SESSION["id_usuario"];
+		$sql = "SELECT * 
+				FROM seguindo 
+				WHERE seguidorId='$idUser' 
+				AND seguindoId='$seguir'";
+		$retornoSeguindo = $con -> query($sql);
+		$registro = $retornoSeguindo -> fetch_array();
+		if (!$registro[0]) {
+			$sql = "INSERT INTO seguindo (seguidorId, seguindoId, seguindoNome)
+					VALUES ('$idUser', '$seguir', '$seguirNome')";
+			$retorno = $con -> query( $sql );
+			if (!$retorno) {
+				echo "<script>";
+				echo "alert('Erro na inserção!');";
+				echo "</script>";
+			}
+			else{
+				header("Location: dashboard.php");
+			}
+		}
+		else{
+			echo "<script>alert('Você já segue esta pessoa')</script>";
+		}
+		
 	}
 
 	if ($_POST != NULL) {
@@ -26,13 +58,7 @@
 
 		$retorno = $con -> query( $sql );
 
-		if ($retorno) {
-			echo "<script>";
-			echo "alert('Inserido com sucesso!');";
-			echo "location.href = 'dashboard.php'; ";
-			echo "</script>";
-		}
-		else{
+		if (!$retorno) {
 			echo "<script>";
 			echo "alert('Erro na inserção!');";
 			echo "</script>";
@@ -53,7 +79,7 @@
 <body>
 	<nav class="dashboard-nav">
 		<div class="nav-wrapper">
-			<a href="#" class="brand-logo">Rede Social</a>
+			<a href="#" class="brand-logo" style="font-size: 22px;">Rede Social</a>
 			<ul id="nav-mobile" class="right hide-on-med-and-down">
 				<li><a class="profile-figure valign-wrapper" href="sass.html"><?php echo $_SESSION['nome_usuario'] ?></a></li>
 				<li><a href="logoff.php">Sair</a></li>
@@ -62,8 +88,8 @@
 	</nav>
 
 	<main class="app-main row">
-		<div class="grid-helper col xl1 show-on-large"></div>
-		<section class="profile-card-section col s12 l2">
+		<!-- <div class="grid-helper col xl1 show-on-large"></div> -->
+		<section class="profile-card-section col s12 l3">
 
 			<div class="card profile-card z-depth-1">
 				<a class="edit-mobile-profile hide-on-large-only btn-floating btn-small waves-effect">
@@ -106,11 +132,12 @@
 				$sql = "SELECT * FROM mensagens ORDER BY data DESC";
 				$retornoMsg = $con -> query($sql);
 				while ($registro = $retornoMsg -> fetch_array()) {
-					$nome = $registro['sender'];
-					$curso = $registro['cursoSender'];
-					$semestre = $registro['semestreSender'];
-					$texto = $registro['texto'];
-					$data = $registro['data'];
+					$nome 		= $registro['sender'];
+					$curso 		= $registro['cursoSender'];
+					$semestre 	= $registro['semestreSender'];
+					$texto 		= $registro['texto'];
+					$data 		= $registro['data'];
+					$idSender	= $registro['idSender'];
 			?>
 				<article>
 					<div class="article-header">
@@ -123,7 +150,7 @@
 					</div>
 					<div class="article-footer">
 						<div class="article-do-stuff">
-							<a href="">Curtir</a>
+							<a href="dashboard.php?seguir=<?php echo $idSender; ?>&seguirNome=<?php echo $nome; ?>">Seguir</a>
 						</div>
 						<div class="article-date">
 							<small><?php echo $data; ?></small>
@@ -138,7 +165,23 @@
 		</section>
 
 		<section class="other-section col s12 m3">
-			
+			<div class="card">
+				<ul class="collection with-header">
+					<li class="collection-header"><h5>Seguindo</h5></li>
+					<?php 
+						$idUserSeguidor = $_SESSION["id_usuario"];
+						$sqlUser = "SELECT * 
+									FROM seguindo
+									WHERE seguidorId='$idUserSeguidor'";
+						$retornoSeguindoSecond = $con -> query($sqlUser);
+						while($registroSeguindo = $retornoSeguindoSecond -> fetch_array()){
+							$seguindoNome = $registroSeguindo['seguindoNome'];
+							echo "<li class='collection-item'>".$seguindoNome."</li>";
+						}
+					?>
+					
+				</ul>
+			</div>
 		</section>
 	</main>
 
