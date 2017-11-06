@@ -14,10 +14,44 @@
 	}
 
 	$seguir 	= $_GET["seguir"];
+	$desseguir 	= $_GET["desseguir"];
 	$seguirNome = $_GET["seguirNome"];
+	$mensagemId = $_GET["mensagemId"];
+	$idUser 	= $_SESSION["id_usuario"];
 
+	// Curtir mensagem
+	if ($mensagemId) {
+		$sql = "SELECT * 
+				FROM curtidas 
+				WHERE mensagemId='$mensagemId' 
+				AND curtidorId='$idUser'";
+		$retornoCurtida = $con -> query($sql);
+		$registroLike = $retornoCurtida -> fetch_array();
+		if (!$registroLike[0]) {
+			$sql = "INSERT INTO curtidas (mensagemId, curtidorId)
+					VALUES ('$mensagemId', '$idUser')";
+			$retorno = $con -> query( $sql );
+			if (!$retorno) {
+				echo "<script>";
+				echo "alert('Erro na inserção!');";
+				echo "</script>";
+			}
+			else{
+				header("Location: dashboard.php");
+			}
+		}
+		else{
+			$sql = "DELETE 
+					FROM curtidas 
+					WHERE mensagemId='$mensagemId' 
+					AND curtidorId='$idUser'";
+			$retornoCurtida = $con -> query($sql);
+			header("Location: dashboard.php");
+		}
+	}
+
+	// Seguir user
 	if ($seguir) {
-		$idUser = $_SESSION["id_usuario"];
 		$sql = "SELECT * 
 				FROM seguindo 
 				WHERE seguidorId='$idUser' 
@@ -42,7 +76,26 @@
 		}
 		
 	}
+	// Parar de seguir user
+	if ($desseguir) {
+		$idUser = $_SESSION["id_usuario"];
+		$sql = "DELETE 
+				FROM seguindo 
+				WHERE seguidorId='$idUser' 
+				AND seguindoId='$desseguir'";
+		$retornoDesseguindo = $con -> query($sql);
+		if (!$retornoDesseguindo) {
+			echo "<script>";
+			echo "alert('Erro no delete!');";
+			echo "location.href = 'dashboard.php'; ";
+			echo "</script>";
+		}
+		else{
+			header("Location:dashboard.php");
+		}
+	}
 
+	// Enviar mensagem
 	if ($_POST != NULL) {
 
 		$senderNome 	= $_SESSION["nome_usuario"];
@@ -53,6 +106,10 @@
 		date_default_timezone_set('America/Araguaina');
 		$data 			= date('Y-m-d H:i:sa');
 
+		if ($message == '') {
+			header("Location:dashboard.php");
+			return;
+		}
 		$sql = "INSERT INTO mensagens (texto, sender, idSender, cursoSender, semestreSender, data)
 				VALUES ('$message', '$senderNome', '$senderId', '$senderCurso', '$senderSem', CURRENT_TIMESTAMP())";
 
@@ -79,7 +136,7 @@
 <body>
 	<nav class="dashboard-nav">
 		<div class="nav-wrapper">
-			<a href="#" class="brand-logo" style="font-size: 22px;">Rede Social</a>
+			<a href="dashboard.php" class="brand-logo" style="font-size: 22px;">Rede Social</a>
 			<ul id="nav-mobile" class="right hide-on-med-and-down">
 				<li><a class="profile-figure valign-wrapper" href="sass.html"><?php echo $_SESSION['nome_usuario'] ?></a></li>
 				<li><a href="logoff.php">Sair</a></li>
@@ -91,10 +148,10 @@
 		<!-- <div class="grid-helper col xl1 show-on-large"></div> -->
 		<section class="profile-card-section col s12 l3">
 
-			<div class="card profile-card z-depth-1">
-				<a class="edit-mobile-profile hide-on-large-only btn-floating btn-small waves-effect">
+			<div class="card profile-card z-depth-1 card-content">
+				<!-- <a class="edit-mobile-profile hide-on-large-only btn-floating btn-small waves-effect">
 					<i class="small material-icons">mode_edit</i>
-				</a>
+				</a> -->
 				<div class="card-content">
 					<div class="card-info-holder">
 						<span class="profile-figure-second valign-wrapper"><?php echo $_SESSION['nome_usuario'] ?></span>
@@ -106,10 +163,52 @@
 							<li class="chip"><i class="tiny material-icons">description</i><?php echo $_SESSION["semestre_usuario"]; ?></li>
 						</ul>
 					</div>
+					
 				</div>
-				<div class="card-action hide-on-med-and-down">
-					<a href="#">Editar Perfil</a>
+				<div class="card-action">
+				<div class="user-data-holder">
+					<h4>
+						<?php 
+							$sqlUser = "SELECT * 
+										FROM seguindo
+										WHERE seguindoId='$idUser'";
+							$retornoSeguindoThird = $con -> query($sqlUser);
+							echo mysqli_num_rows($retornoSeguindoThird);
+						?> 
+					</h4>
+					<span>
+						Seguidores
+					</span>
 				</div>
+				<div class="user-data-holder">
+					<h4>
+						<?php 
+							$sqlUser = "SELECT * 
+										FROM curtidas
+										WHERE curtidorId='$idUser'";
+							$retornoCurtidaSecond = $con -> query($sqlUser);
+							echo mysqli_num_rows($retornoCurtidaSecond);
+						?> 
+					</h4>
+					<span>
+						Curtidas
+					</span>
+				</div>
+				<div class="user-data-holder">
+					<h4>
+						<?php 
+							$sqlUser = "SELECT * 
+										FROM mensagens
+										WHERE idSender='$idUser'";
+							$retornoMsgSecond = $con -> query($sqlUser);
+							echo mysqli_num_rows($retornoMsgSecond);
+						?> 
+					</h4>
+					<span>
+						Posts
+					</span>
+				</div>
+			</div>
 			</div>
 		</section>
 
@@ -129,9 +228,16 @@
 
 			<div class="feed-content-holder">
 			<?php 
-				$sql = "SELECT * FROM mensagens ORDER BY data DESC";
+				if ($_GET['filtrar']) {
+					$idSender = $_GET['idSender'];
+					$sql = "SELECT * FROM mensagens WHERE idSender='$idSender' ORDER BY data DESC";
+				}
+				else{
+					$sql = "SELECT * FROM mensagens ORDER BY data DESC";
+				}
 				$retornoMsg = $con -> query($sql);
 				while ($registro = $retornoMsg -> fetch_array()) {
+					$msgId 		= $registro['id'];
 					$nome 		= $registro['sender'];
 					$curso 		= $registro['cursoSender'];
 					$semestre 	= $registro['semestreSender'];
@@ -140,17 +246,30 @@
 					$idSender	= $registro['idSender'];
 			?>
 				<article>
-					<div class="article-header">
+					<div class="article-header valign-wrapper">
 						<span><?php echo $nome; ?></span>
 						<span class="badge red"><?php echo $curso; ?></span>
   						<span class="badge blue"><?php echo $semestre; ?></span>
+						<a class="add-person-icon" href="dashboard.php?seguir=<?php echo $idSender; ?>&seguirNome=<?php echo $nome; ?>"> <i class="small material-icons">person_add</i> </a>
 					</div>
 					<div class="article-body">
 						<p><em><?php echo $texto; ?></em></p>
 					</div>
 					<div class="article-footer">
 						<div class="article-do-stuff">
-							<a href="dashboard.php?seguir=<?php echo $idSender; ?>&seguirNome=<?php echo $nome; ?>">Seguir</a>
+							<a href="dashboard.php?mensagemId=<?php echo $msgId; ?>&$userId=<?php echo $idUser; ?>">
+								<i class="material-icons">thumb_up</i>
+								<span>
+									<?php  
+										$sqlLiked = "SELECT id
+													FROM curtidas 
+													WHERE mensagemId='$msgId'";
+										$retornoMsgLiked = $con -> query($sqlLiked);
+										echo mysqli_num_rows($retornoMsgLiked);
+									?>
+								</span>
+							</a>
+							<a href=""><i class="material-icons">mode_comment</i></a>
 						</div>
 						<div class="article-date">
 							<small><?php echo $data; ?></small>
@@ -167,7 +286,7 @@
 		<section class="other-section col s12 m3">
 			<div class="card">
 				<ul class="collection with-header">
-					<li class="collection-header"><h5>Seguindo</h5></li>
+					<li class="collection-header"><h5>Seguindo <a href="dashboard.php"><i class='material-icons'>home</i></a></h5></li>
 					<?php 
 						$idUserSeguidor = $_SESSION["id_usuario"];
 						$sqlUser = "SELECT * 
@@ -176,7 +295,14 @@
 						$retornoSeguindoSecond = $con -> query($sqlUser);
 						while($registroSeguindo = $retornoSeguindoSecond -> fetch_array()){
 							$seguindoNome = $registroSeguindo['seguindoNome'];
-							echo "<li class='collection-item'>".$seguindoNome."</li>";
+							$seguindoId = $registroSeguindo['seguindoId'];
+					?>
+					<li class='collection-item valign-wrapper'>
+						<a href="dashboard.php?desseguir=<?php echo $seguindoId; ?>&seguirNome=<?php echo $seguindoNome; ?>"><i class='material-icons'>highlight_off</i></a>
+						<a href="dashboard.php?filtrar=1&idSender=<?php echo $seguindoId; ?>"><?php echo $seguindoNome; ?></a>
+					</li>
+
+					<?php
 						}
 					?>
 					

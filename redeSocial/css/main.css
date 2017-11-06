@@ -7,6 +7,9 @@
 	color: #fff;
 	border-radius: 2px;
 }
+i.material-icons{
+	vertical-align: middle;
+}
 
 .login-page-holder{
 	width: 100%;
@@ -60,6 +63,9 @@
 	font-size: 16px;
 	min-height: 45px;
 }
+.card-content{
+	padding-bottom: 7px!important;
+}
 .card-list i{
 	vertical-align: sub;
 	padding-right: 5px;
@@ -94,6 +100,7 @@
 }
 .article-header{
 	padding-bottom: 0;
+	position: relative;
 }
 .article-footer{
 	border-top: solid 1px #eee;
@@ -104,6 +111,10 @@
 	float: left;
 	width: 80%;
 }
+.article-do-stuff a{
+	margin-right: 10px;
+	color: #7BB7B1;
+}
 .article-date{
 	display: inline-block;
 	float: left;
@@ -113,4 +124,31 @@
 	position: absolute;
 	right: 5px;
 	top: 8px;
+}
+.add-person-icon{
+	color: #7BB7B1;
+	position: absolute;
+	right: 12px;
+	top: 10px;
+}
+.other-section .collection-item i{
+	color: #7BB7B1;
+	margin-right: 10px;
+	cursor: pointer;
+}
+.collection-header a{
+	color: #7BB7B1;
+}
+.user-data-holder{
+	text-align: center; 
+	width: 32%;
+	display: inline-block;
+}
+.user-data-holder h4{
+	color: #78A39E;
+	margin:0;
+	font-size: 1.8rem;
+}
+.user-data-holder span{
+	color: grey;
 }
