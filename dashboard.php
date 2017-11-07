@@ -8,7 +8,10 @@
 	}
 
 	// Local
-	// $con = new mysqli("localhost", "root", "", "andrecos_unifacs");
+	// $servidor 	= "localhost";
+	// $user 		= "root";
+	// $senha 		= "";
+	// $banco	 	= "andrecos_unifacs";
 
 	// heroku
 	$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
@@ -227,7 +230,7 @@
 				<div class="row">
 					<form method="POST" class="col s12">
 						<div class="textarea-feed-holder z-depth-1 valign-wrapper">
-							<textarea name="message_feed" class="col s11"></textarea>	
+							<textarea name="message_feed" class="col s11" placeholder="O que está pensando?"></textarea>	
 							<span class="col s2">
 								<button type="submit" class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></button>		
 							</span>		
