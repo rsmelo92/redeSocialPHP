@@ -4,10 +4,10 @@
 
 	session_start("rede_social");
 	// local
-	$servidor 	= "localhost";
-	$user 		= "root";
-	$senha 		= "";
-	$banco	 	= "andrecos_unifacs";
+	// $servidor 	= "localhost";
+	// $user 		= "root";
+	// $senha 		= "";
+	// $banco	 	= "andrecos_unifacs";
 
 	// heroku
 	$url = parse_url(getenv("CLEARDB_DATABASE_URL"));

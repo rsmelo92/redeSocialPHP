@@ -7,8 +7,18 @@
 		header("Location: index.php");
 	}
 
-	$con = new mysqli("localhost", "root", "", "andrecos_unifacs");
-	
+	// Local
+	// $con = new mysqli("localhost", "root", "", "andrecos_unifacs");
+
+	// heroku
+	$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+	$servidor = $url["host"];
+	$user 	  = $url["user"];
+	$senha 	  = $url["pass"];
+	$banco 	  = substr($url["path"], 1);
+
+	$con = new mysqli($servidor, $user, $senha, $banco);
+
 	if ($con->connect_errno) {
 		echo "Erro ao conectar: " . $con->connect_error;
 	}
