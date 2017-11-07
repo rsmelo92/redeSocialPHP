@@ -3,11 +3,18 @@
 	error_reporting(1);
 
 	session_start("rede_social");
-
+	// local
 	$servidor 	= "localhost";
 	$user 		= "root";
 	$senha 		= "";
 	$banco	 	= "andrecos_unifacs";
+
+	// heroku
+	$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+	$servidor = $url["host"];
+	$user 	  = $url["user"];
+	$senha 	  = $url["pass"];
+	$banco 	  = substr($url["path"], 1);
 
 	$con = new mysqli($servidor, $user, $senha, $banco);
 
