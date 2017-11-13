@@ -114,6 +114,36 @@ i.material-icons{
 .article-do-stuff a{
 	margin-right: 10px;
 	color: #7BB7B1;
+	float: left;
+}
+.comment-holder input{
+	float: left;
+	border: solid 1px #ccc;
+	height: 30px;
+	padding-left: 10px;
+	font-size: 18px;
+	border-radius: 18px;
+	padding-right: 10px;
+	width: 70%;
+}
+li.active{
+	background: #F3F9F8;
+}
+.collapsible i{
+	color: #7BB7B1;
+}
+.collapsible{
+	margin: 8px 0 0 0;
+	box-shadow: none;
+	padding: 0;
+	border: none;
+}
+.collapsible-body{
+	padding: 0 50px;
+}
+.comment-item{
+	margin-top: 30px;
+	margin-bottom: 30px;
 }
 .article-date{
 	display: inline-block;

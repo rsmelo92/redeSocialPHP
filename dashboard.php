@@ -8,17 +8,17 @@
 	}
 
 	// Local
-	// $servidor 	= "localhost";
-	// $user 		= "root";
-	// $senha 		= "";
-	// $banco	 	= "andrecos_unifacs";
+	$servidor 	= "localhost";
+	$user 		= "root";
+	$senha 		= "";
+	$banco	 	= "andrecos_unifacs";
 
 	// heroku
-	$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
-	$servidor = $url["host"];
-	$user 	  = $url["user"];
-	$senha 	  = $url["pass"];
-	$banco 	  = substr($url["path"], 1);
+	// $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+	// $servidor = $url["host"];
+	// $user 	  = $url["user"];
+	// $senha 	  = $url["pass"];
+	// $banco 	  = substr($url["path"], 1);
 
 	$con = new mysqli($servidor, $user, $senha, $banco);
 
@@ -119,22 +119,40 @@
 		date_default_timezone_set('America/Araguaina');
 		$data 			= date('Y-m-d H:i:sa');
 
-		if ($message == '') {
+		$comment 		= $_POST["comment_conteudo"];
+		$messageId 		= $_POST["comment_msg_id"];
+
+		if ($comment && $messageId && $senderId) {
+			$sql = "INSERT INTO comentarios(conteudo, idComentador, idMensagem)
+					VALUES('$comment', '$senderId', '$messageId')";
+			$retorno = $con -> query( $sql );
+			if (!$retorno) {
+				echo "<script>";
+				echo "alert('Erro no envio do comentário!');";
+				echo "</script>";
+			}
+		}
+		elseif ($message == '') {
 			header("Location:dashboard.php");
 			return;
 		}
-		$sql = "INSERT INTO mensagens (texto, sender, idSender, cursoSender, semestreSender, data)
-				VALUES ('$message', '$senderNome', '$senderId', '$senderCurso', '$senderSem', CURRENT_TIMESTAMP())";
+		else{
+			$sql = "INSERT INTO mensagens (texto, sender, idSender, cursoSender, semestreSender, data)
+					VALUES ('$message', '$senderNome', '$senderId', '$senderCurso', '$senderSem', CURRENT_TIMESTAMP())";
 
-		$retorno = $con -> query( $sql );
+			$retorno = $con -> query( $sql );
 
-		if (!$retorno) {
-			echo "<script>";
-			echo "alert('Erro na inserção!');";
-			echo "</script>";
+			if (!$retorno) {
+				echo "<script>";
+				echo "alert('Erro na inserção!');";
+				echo "</script>";
+			}
 		}
 
 	}
+
+	// Comentar mensagem
+
 
 ?>
 
@@ -151,20 +169,16 @@
 		<div class="nav-wrapper">
 			<a href="dashboard.php" class="brand-logo" style="font-size: 22px;">Rede Social</a>
 			<ul id="nav-mobile" class="right hide-on-med-and-down">
-				<li><a class="profile-figure valign-wrapper" href="sass.html"><?php echo $_SESSION['nome_usuario'] ?></a></li>
+				<li><a class="profile-figure valign-wrapper" href="#"><?php echo $_SESSION['nome_usuario'] ?></a></li>
 				<li><a href="logoff.php">Sair</a></li>
 			</ul>
 		</div>
 	</nav>
 
 	<main class="app-main row">
-		<!-- <div class="grid-helper col xl1 show-on-large"></div> -->
+		<!-- Perfil -->
 		<section class="profile-card-section col s12 l3">
-
 			<div class="card profile-card z-depth-1 card-content">
-				<!-- <a class="edit-mobile-profile hide-on-large-only btn-floating btn-small waves-effect">
-					<i class="small material-icons">mode_edit</i>
-				</a> -->
 				<div class="card-content">
 					<div class="card-info-holder">
 						<span class="profile-figure-second valign-wrapper"><?php echo $_SESSION['nome_usuario'] ?></span>
@@ -225,6 +239,7 @@
 			</div>
 		</section>
 
+		<!-- Feed -->
 		<section class="feed-section container col s12 l6">
 			<div class="feed-text-holder">
 				<div class="row">
@@ -282,12 +297,67 @@
 									?>
 								</span>
 							</a>
-							<a href=""><i class="material-icons">mode_comment</i></a>
+							<!-- <a href=""><i class="material-icons">mode_comment</i></a> -->
+							<div class="comment-holder">
+								<form method="POST">
+									<input hidden type="number" name="comment_msg_id" value="<?php echo $msgId; ?>">
+									<input type="text" class="browser-default" placeholder="Comente alguma coisa" name="comment_conteudo">	
+									<input type="submit" name="submit_comment" hidden>
+								</form>
+							</div>
 						</div>
 						<div class="article-date">
 							<small><?php echo $data; ?></small>
 						</div>
 					</div>
+					<ul class="collapsible" data-collapsible="accordion">
+						<li>
+							<?php 
+								$sql = "SELECT *
+										FROM comentarios
+										WHERE idMensagem = '$msgId' ";
+								$retorno = $con -> query( $sql );
+							?>
+							<div class="collapsible-header">
+								<i class="material-icons">mode_comment</i>
+								<?php echo mysqli_num_rows($retorno); ?>
+								Comentários
+							</div>
+							<div class="collapsible-body">
+								<div style="display: block; width: 100%;">
+									<?php 
+										if (mysqli_num_rows($retorno) ) {
+											while ($registro = $retorno -> fetch_array()) {
+												$conteudo 		= $registro['conteudo'];
+												$userComentador = $registro['idComentador'];
+												$sql2 = "SELECT nome
+														 FROM usuario
+														 WHERE id = '$userComentador' ";
+												$retorno2 = $con -> query( $sql2 );
+												$registro2 = $retorno2 -> fetch_array();
+									?>
+									
+									<div class="comment-item">
+										<strong style="color: #419385;"><?php echo $registro2[0]; ?></strong>
+										<span style="font-size: 13px;"> 
+											<?php echo $conteudo; ?> 
+										</span>
+									</div>
+									
+									<?php
+											}
+										}
+										else{
+											echo "<div class='comment-item'>";
+											echo "Sem Comentários";
+											echo "</div>";
+										}
+
+									?>
+								</div>
+							</div>
+						</li>
+					</ul>
 				</article>
 			<?php
 				}

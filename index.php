@@ -4,17 +4,17 @@
 
 	session_start("rede_social");
 	// local
-	// $servidor 	= "localhost";
-	// $user 		= "root";
-	// $senha 		= "";
-	// $banco	 	= "andrecos_unifacs";
+	$servidor 	= "localhost";
+	$user 		= "root";
+	$senha 		= "";
+	$banco	 	= "andrecos_unifacs";
 
 	// heroku
-	$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
-	$servidor = $url["host"];
-	$user 	  = $url["user"];
-	$senha 	  = $url["pass"];
-	$banco 	  = substr($url["path"], 1);
+	// $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+	// $servidor = $url["host"];
+	// $user 	  = $url["user"];
+	// $senha 	  = $url["pass"];
+	// $banco 	  = substr($url["path"], 1);
 
 	$con = new mysqli($servidor, $user, $senha, $banco);
 
@@ -33,22 +33,38 @@
 			$curso 		= addslashes( $_POST['curso'] );
 			$semestre 	= addslashes( $_POST['semestre'] );
 
-			$sql = "INSERT INTO usuario(nome, login, senha, curso, semestre) 
-					VALUES ('$nome', '$login', '$senha', '$curso', '$semestre')";
-
+			$sql = "SELECT * 
+					FROM usuario
+					WHERE login = '$login' ";
+			
 			$retorno = $con -> query( $sql );
+			$registro = $retorno -> fetch_array();
 
-			if ($retorno) {
-				echo "<script>";
-				echo "alert('Cadastrado com sucesso!');";
-				echo "location.href = 'index.php'; ";
-				echo "</script>";
+			if (!$registro[0]) {
+				$sql = "INSERT INTO usuario(nome, login, senha, curso, semestre) 
+						VALUES ('$nome', '$login', '$senha', '$curso', '$semestre')";
+
+				$retorno = $con -> query( $sql );
+
+				if ($retorno) {
+					echo "<script>";
+					echo "alert('Cadastrado com sucesso!');";
+					echo "location.href = 'index.php'; ";
+					echo "</script>";
+				}
+				else{
+					echo "<script>";
+					echo "alert('Erro na inserção!');";
+					echo "</script>";
+				}
 			}
 			else{
 				echo "<script>";
-				echo "alert('Erro na inserção!');";
+				echo "alert('Já existe um user com esses dados!');";
+				echo "location.href = 'index.php'; ";
 				echo "</script>";
 			}
+
 		}
 		else{
 			$login = addslashes( $_POST["login"]);
