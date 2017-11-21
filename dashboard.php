@@ -8,17 +8,17 @@
 	}
 
 	// // Local
-	// $servidor 	= "localhost";
-	// $user 		= "root";
-	// $senha 		= "";
-	// $banco	 	= "andrecos_unifacs";
+	$servidor 	= "localhost";
+	$user 		= "root";
+	$senha 		= "";
+	$banco	 	= "andrecos_unifacs";
 
 	// heroku
-	$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
-	$servidor = $url["host"];
-	$user 	  = $url["user"];
-	$senha 	  = $url["pass"];
-	$banco 	  = substr($url["path"], 1);
+	// $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+	// $servidor = $url["host"];
+	// $user 	  = $url["user"];
+	// $senha 	  = $url["pass"];
+	// $banco 	  = substr($url["path"], 1);
 
 	$con = new mysqli($servidor, $user, $senha, $banco);
 
@@ -111,6 +111,7 @@
 	// Enviar mensagem
 	if ($_POST != NULL) {
 
+		$imgSrc 		= $_POST['imgSrc'];
 		$senderNome 	= $_SESSION["nome_usuario"];
 		$senderId 		= $_SESSION["id_usuario"];
 		$senderCurso 	= $_SESSION["curso_usuario"];
@@ -132,13 +133,13 @@
 				echo "</script>";
 			}
 		}
-		elseif ($message == '') {
+		elseif ($message == '' && !$imgSrc) {
 			header("Location:dashboard.php");
 			return;
 		}
 		else{
-			$sql = "INSERT INTO mensagens (texto, sender, idSender, cursoSender, semestreSender, data)
-					VALUES ('$message', '$senderNome', '$senderId', '$senderCurso', '$senderSem', CURRENT_TIMESTAMP())";
+			$sql = "INSERT INTO mensagens (texto, sender, idSender, cursoSender, semestreSender, data, image)
+					VALUES ('$message', '$senderNome', '$senderId', '$senderCurso', '$senderSem', CURRENT_TIMESTAMP(), '$imgSrc')";
 
 			$retorno = $con -> query( $sql );
 
@@ -239,14 +240,44 @@
 			</div>
 		</section>
 
+		<script>
+			function previewFile() {
+				let file    = document.querySelector('input[type=file]').files[0];
+				let reader  = new FileReader();
+
+				reader.addEventListener("load", function () {
+					let img = reader.result;
+					$('#imgSrc').val(img);
+					$('.form-post').submit();
+
+				}, false);
+
+				if (file) {
+					reader.readAsDataURL(file);
+				}
+			}
+		</script>
+
 		<!-- Feed -->
 		<section class="feed-section container col s12 l6">
 			<div class="feed-text-holder">
 				<div class="row">
-					<form method="POST" class="col s12">
+					<form class="form-post" method="POST" class="col s12">
 						<div class="textarea-feed-holder z-depth-1 valign-wrapper">
-							<textarea name="message_feed" class="col s11" placeholder="O que está pensando?"></textarea>	
+							<textarea name="message_feed" class="col s8" placeholder="O que está pensando?"></textarea>	
 							<span class="col s2">
+								<div class="file-field input-field" style="margin:0;">
+									<div class="btn">
+										<span>Foto</span>
+										<input type="file" onchange="previewFile()">
+									</div>
+									<div class="file-path-wrapper">
+										<input hidden class="file-path validate" type="text">
+										<input hidden id="imgSrc" type="text" name="imgSrc" value="">
+									</div>
+								</div>
+							</span>
+							<span class="col s1">
 								<button type="submit" class="btn-floating btn-large waves-effect waves-light"><i class="material-icons">send</i></button>		
 							</span>		
 						</div>
@@ -272,16 +303,33 @@
 					$texto 		= $registro['texto'];
 					$data 		= $registro['data'];
 					$idSender	= $registro['idSender'];
+					$imgSrc		= $registro['image'];
 			?>
 				<article>
 					<div class="article-header valign-wrapper">
 						<span><?php echo $nome; ?></span>
 						<span class="badge red"><?php echo $curso; ?></span>
   						<span class="badge blue"><?php echo $semestre; ?></span>
-						<a class="add-person-icon" href="dashboard.php?seguir=<?php echo $idSender; ?>&seguirNome=<?php echo $nome; ?>"> <i class="small material-icons">person_add</i> </a>
+  						<?php 
+  							if ($idSender != $_SESSION["id_usuario"]) {
+  						?>
+							<a class="add-person-icon" href="dashboard.php?seguir=<?php echo $idSender; ?>&seguirNome=<?php echo $nome; ?>"> <i class="small material-icons">person_add</i> </a>
+						<?php
+  							}
+  						?>
 					</div>
 					<div class="article-body">
 						<p><em><?php echo $texto; ?></em></p>
+						<div class="img-post-holder" style="text-align: center;">
+							<?php 
+								if ($imgSrc) {
+
+							?>
+								<img style="max-width: 50%;" src="<?php echo $imgSrc; ?>">
+							<?php 
+								} 
+							?>
+						</div>
 					</div>
 					<div class="article-footer">
 						<div class="article-do-stuff">
